@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd]    Script Date: 05/08/2021 2:25:36 PM ******/
+/****** Object:  Job [Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd]    Script Date: 05/08/2021 6:14:32 PM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [Database Maintenance]    Script Date: 05/08/2021 2:25:37 PM ******/
+/****** Object:  JobCategory [Database Maintenance]    Script Date: 05/08/2021 6:14:32 PM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'Database Maintenance' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'Database Maintenance'
@@ -26,7 +26,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'Restore BAPU_PolicyAdministr
 		@owner_login_name=N'sa', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 1: Kill User Connections]    Script Date: 05/08/2021 2:25:38 PM ******/
+/****** Object:  Step [Step 1: Kill User Connections]    Script Date: 05/08/2021 6:14:34 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 1: Kill User Connections', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
@@ -42,7 +42,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 1: 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 2: Drop Existing BAPU PolicyAdministration Database]    Script Date: 05/08/2021 2:25:39 PM ******/
+/****** Object:  Step [Step 2: Drop Existing BAPU PolicyAdministration Database]    Script Date: 05/08/2021 6:14:34 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 2: Drop Existing BAPU PolicyAdministration Database', 
 		@step_id=2, 
 		@cmdexec_success_code=0, 
@@ -58,7 +58,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 2: 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 3: Delete Existing Backup File]    Script Date: 05/08/2021 2:25:39 PM ******/
+/****** Object:  Step [Step 3: Delete Existing Backup File]    Script Date: 05/08/2021 6:14:35 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 3: Delete Existing Backup File', 
 		@step_id=3, 
 		@cmdexec_success_code=0, 
@@ -73,7 +73,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 3: 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 4: Copy Backup File From BapuBUSSqlProd]    Script Date: 05/08/2021 2:25:39 PM ******/
+/****** Object:  Step [Step 4: Copy Backup File From BapuBUSSqlProd]    Script Date: 05/08/2021 6:14:35 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 4: Copy Backup File From BapuBUSSqlProd', 
 		@step_id=4, 
 		@cmdexec_success_code=0, 
@@ -87,7 +87,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 4: 
 		@command=N'copy "\\BapuBUSSqlProd\BUSBackups\BAPU_PolicyAdmin_copy.bak" "L:\BAPU_CopyDown\BAPU_PolicyAdmin_copy.bak" /Y', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 5: Restore BAPU PolicyAdministration Database]    Script Date: 05/08/2021 2:25:40 PM ******/
+/****** Object:  Step [Step 5: Restore BAPU PolicyAdministration Database]    Script Date: 05/08/2021 6:14:35 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 5: Restore BAPU PolicyAdministration Database', 
 		@step_id=5, 
 		@cmdexec_success_code=0, 
@@ -107,7 +107,7 @@ move ''ftfg_Organization.DoingBusinessAs.FTCatalog_EC684D2'' to ''D:\sqldata\BAP
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 6: Set BAPU PolicyAdministration to Multi-User Access]    Script Date: 05/08/2021 2:25:40 PM ******/
+/****** Object:  Step [Step 6: Set BAPU PolicyAdministration to Multi-User Access]    Script Date: 05/08/2021 6:14:35 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 6: Set BAPU PolicyAdministration to Multi-User Access', 
 		@step_id=6, 
 		@cmdexec_success_code=0, 
@@ -122,7 +122,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 6: 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 7: Set Recovery Model to Simple]    Script Date: 05/08/2021 2:25:40 PM ******/
+/****** Object:  Step [Step 7: Set Recovery Model to Simple]    Script Date: 05/08/2021 6:14:36 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 7: Set Recovery Model to Simple', 
 		@step_id=7, 
 		@cmdexec_success_code=0, 
@@ -137,7 +137,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 7: 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 8: Set Permissions]    Script Date: 05/08/2021 2:25:41 PM ******/
+/****** Object:  Step [Step 8: Set Permissions]    Script Date: 05/08/2021 6:14:36 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 8: Set Permissions', 
 		@step_id=8, 
 		@cmdexec_success_code=0, 
@@ -154,13 +154,13 @@ ALTER ROLE db_datareader ADD MEMBER [WRBTS\Primary IT Support Team];
 
 IF NOT EXISTS ( SELECT  *
                 FROM    sys.database_principals AS s
-                WHERE   s.name = ''WRBTS\svc-bap-d-dw'' )
+                WHERE   s.name = ''WRBTS\svc-bap-p-dw'' )
     BEGIN
-        CREATE USER [WRBTS\svc-bap-d-dw] FOR LOGIN [WRBTS\svc-bap-d-dw]
+        CREATE USER [WRBTS\svc-bap-p-dw] FOR LOGIN [WRBTS\svc-bap-p-dw]
             WITH DEFAULT_SCHEMA = dbo;
     END;
 
-ALTER ROLE db_datareader ADD MEMBER [WRBTS\svc-bap-d-dw];
+ALTER ROLE db_datareader ADD MEMBER [WRBTS\svc-bap-p-dw];
 
 IF NOT EXISTS ( SELECT  * FROM  sys.database_principals AS s WHERE  s.name = ''bapu_olap'' )
     BEGIN
@@ -184,7 +184,7 @@ EXEC sys.sp_changedbowner ''sa'';',
 		@database_name=N'BAPU_PolicyAdministration', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 9: Update Statistics]    Script Date: 05/08/2021 2:25:41 PM ******/
+/****** Object:  Step [Step 9: Update Statistics]    Script Date: 05/08/2021 6:14:36 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 9: Update Statistics', 
 		@step_id=9, 
 		@cmdexec_success_code=0, 
@@ -201,7 +201,7 @@ EXECUTE dbo.sp_updatestats',
 		@database_name=N'BAPU_PolicyAdministration', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Step 10: Run Fix User's Script]    Script Date: 05/08/2021 2:25:41 PM ******/
+/****** Object:  Step [Step 10: Run Fix User's Script]    Script Date: 05/08/2021 6:14:37 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Step 10: Run Fix User''s Script', 
 		@step_id=10, 
 		@cmdexec_success_code=0, 
