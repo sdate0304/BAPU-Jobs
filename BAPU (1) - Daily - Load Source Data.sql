@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [BAPU (1) - Daily - Load Source Data]    Script Date: 03/17/2021 4:05:12 PM ******/
+/****** Object:  Job [BAPU (1) - Daily - Load Source Data]    Script Date: 09/01/2021 11:08:41 AM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 03/17/2021 4:05:12 PM ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 09/01/2021 11:08:42 AM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -26,7 +26,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'BAPU (1) - Daily - Load Sour
 		@owner_login_name=N'WRBTS\SVC-BAP-P-DW', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Create Folders for Excel Files]    Script Date: 03/17/2021 4:05:13 PM ******/
+/****** Object:  Step [Create Folders for Excel Files]    Script Date: 09/01/2021 11:08:43 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Create Folders for Excel Files', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
@@ -41,7 +41,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Create F
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Clear Historical Balancing Records]    Script Date: 03/17/2021 4:05:13 PM ******/
+/****** Object:  Step [Clear Historical Balancing Records]    Script Date: 09/01/2021 11:08:43 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Clear Historical Balancing Records', 
 		@step_id=2, 
 		@cmdexec_success_code=0, 
@@ -56,7 +56,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Clear Hi
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Start Restore BUS Database Batch (Batch_Type_Key = 3) & Start Process_Key_300]    Script Date: 03/17/2021 4:05:13 PM ******/
+/****** Object:  Step [Start Restore BUS Database Batch (Batch_Type_Key = 3) & Start Process_Key_300]    Script Date: 09/01/2021 11:08:44 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Start Restore BUS Database Batch (Batch_Type_Key = 3) & Start Process_Key_300', 
 		@step_id=3, 
 		@cmdexec_success_code=0, 
@@ -91,7 +91,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd SQL Server Agent Job]    Script Date: 03/17/2021 4:05:13 PM ******/
+/****** Object:  Step [Run 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd SQL Server Agent Job]    Script Date: 09/01/2021 11:08:44 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd SQL Server Agent Job', 
 		@step_id=4, 
 		@cmdexec_success_code=0, 
@@ -106,7 +106,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''Re
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd' SQL Job to Complete]    Script Date: 03/17/2021 4:05:13 PM ******/
+/****** Object:  Step [Wait for 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd' SQL Job to Complete]    Script Date: 09/01/2021 11:08:45 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd'' SQL Job to Complete', 
 		@step_id=5, 
 		@cmdexec_success_code=0, 
@@ -123,7 +123,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Complete Restore BUS Database Batch (Batch_Type_Key = 3) & Complete Process_Key 300]    Script Date: 03/17/2021 4:05:14 PM ******/
+/****** Object:  Step [Complete Restore BUS Database Batch (Batch_Type_Key = 3) & Complete Process_Key 300]    Script Date: 09/01/2021 11:08:46 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Complete Restore BUS Database Batch (Batch_Type_Key = 3) & Complete Process_Key 300', 
 		@step_id=6, 
 		@cmdexec_success_code=0, 
@@ -174,7 +174,7 @@ IF @batch_status_out = ''Running''
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Fail Process_Key 300 (BUS Staging Restore)]    Script Date: 03/17/2021 4:05:14 PM ******/
+/****** Object:  Step [Fail Process_Key 300 (BUS Staging Restore)]    Script Date: 09/01/2021 11:08:46 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Fail Process_Key 300 (BUS Staging Restore)', 
 		@step_id=7, 
 		@cmdexec_success_code=0, 
@@ -201,7 +201,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [LDR Load]    Script Date: 03/17/2021 4:05:14 PM ******/
+/****** Object:  Step [LDR Load]    Script Date: 09/01/2021 11:08:46 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'LDR Load', 
 		@step_id=8, 
 		@cmdexec_success_code=0, 
@@ -216,7 +216,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'LDR Load
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [APS Load]    Script Date: 03/17/2021 4:05:14 PM ******/
+/****** Object:  Step [APS Load]    Script Date: 09/01/2021 11:08:46 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'APS Load', 
 		@step_id=9, 
 		@cmdexec_success_code=0, 
@@ -231,12 +231,12 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'APS Load
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Gempostage Load]    Script Date: 03/17/2021 4:05:15 PM ******/
+/****** Object:  Step [Gempostage Load]    Script Date: 09/01/2021 11:08:47 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Gempostage Load', 
 		@step_id=10, 
 		@cmdexec_success_code=0, 
 		@on_success_action=3, 
-		@on_success_step_id=0, 
+		@on_success_step_id=14, 
 		@on_fail_action=2, 
 		@on_fail_step_id=0, 
 		@retry_attempts=0, 
@@ -246,7 +246,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Gemposta
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [OWSY Policy/Item/Partner ETL]    Script Date: 03/17/2021 4:05:15 PM ******/
+/****** Object:  Step [OWSY Policy/Item/Partner ETL]    Script Date: 09/01/2021 11:08:48 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Policy/Item/Partner ETL', 
 		@step_id=11, 
 		@cmdexec_success_code=0, 
@@ -261,7 +261,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Pol
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [OWSY Partner Code Reference ETL]    Script Date: 03/17/2021 4:05:15 PM ******/
+/****** Object:  Step [OWSY Partner Code Reference ETL]    Script Date: 09/01/2021 11:08:48 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Partner Code Reference ETL', 
 		@step_id=12, 
 		@cmdexec_success_code=0, 
@@ -276,12 +276,12 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Par
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Loss XLS Load]    Script Date: 03/17/2021 4:05:15 PM ******/
+/****** Object:  Step [Loss XLS Load]    Script Date: 09/01/2021 11:08:48 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Loss XLS Load', 
 		@step_id=13, 
 		@cmdexec_success_code=0, 
-		@on_success_action=3, 
-		@on_success_step_id=0, 
+		@on_success_action=4, 
+		@on_success_step_id=15, 
 		@on_fail_action=2, 
 		@on_fail_step_id=0, 
 		@retry_attempts=0, 
@@ -291,8 +291,8 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Loss XLS
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [York Load]    Script Date: 03/17/2021 4:05:15 PM ******/
-EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'York Load', 
+/****** Object:  Step [WC Claim Load (TPA: Sedgwick (Legacy TPA Name: York)]    Script Date: 09/01/2021 11:08:48 AM ******/
+EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'WC Claim Load (TPA: Sedgwick (Legacy TPA Name: York)', 
 		@step_id=14, 
 		@cmdexec_success_code=0, 
 		@on_success_action=3, 
@@ -306,7 +306,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'York Loa
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [SSP PDR Load Check]    Script Date: 03/17/2021 4:05:16 PM ******/
+/****** Object:  Step [SSP PDR Load Check]    Script Date: 09/01/2021 11:08:48 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR Load Check', 
 		@step_id=15, 
 		@cmdexec_success_code=0, 
@@ -322,7 +322,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR 
 		@database_name=N'BAPU', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [SSP PDR Policy Load (BAPU)]    Script Date: 03/17/2021 4:05:16 PM ******/
+/****** Object:  Step [SSP PDR Policy Load (BAPU)]    Script Date: 09/01/2021 11:08:49 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR Policy Load (BAPU)', 
 		@step_id=16, 
 		@cmdexec_success_code=0, 
@@ -337,7 +337,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [SSP PDR Quote (BAPU)]    Script Date: 03/17/2021 4:05:16 PM ******/
+/****** Object:  Step [SSP PDR Quote (BAPU)]    Script Date: 09/01/2021 11:08:49 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR Quote (BAPU)', 
 		@step_id=17, 
 		@cmdexec_success_code=0, 
@@ -352,7 +352,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR 
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Syndicate Load]    Script Date: 03/17/2021 4:05:16 PM ******/
+/****** Object:  Step [Syndicate Load]    Script Date: 09/01/2021 11:08:49 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Syndicate Load', 
 		@step_id=18, 
 		@cmdexec_success_code=0, 
@@ -367,7 +367,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Syndicat
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [BDR Load]    Script Date: 03/17/2021 4:05:16 PM ******/
+/****** Object:  Step [BDR Load]    Script Date: 09/01/2021 11:08:49 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BDR Load', 
 		@step_id=19, 
 		@cmdexec_success_code=0, 
@@ -382,7 +382,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BDR Load
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [BPM & BPMi Load]    Script Date: 03/17/2021 4:05:16 PM ******/
+/****** Object:  Step [BPM & BPMi Load]    Script Date: 09/01/2021 11:08:49 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BPM & BPMi Load', 
 		@step_id=20, 
 		@cmdexec_success_code=0, 
