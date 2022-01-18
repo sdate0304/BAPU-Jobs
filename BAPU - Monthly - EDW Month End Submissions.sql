@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [BAPU - Monthly - EDW Month End Submissions]    Script Date: 03/17/2021 4:03:41 PM ******/
+/****** Object:  Job [BAPU - Monthly - EDW Month End Submissions]    Script Date: 01/18/2022 5:21:56 PM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 03/17/2021 4:03:41 PM ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 01/18/2022 5:21:56 PM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -28,7 +28,7 @@ This job is maintained by Data Services. Please contact PrimaryITData@wrberkley.
 		@owner_login_name=N'WRBTS\SVC-BAP-P-DW', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run EDW Month End SSIS Package]    Script Date: 03/17/2021 4:03:42 PM ******/
+/****** Object:  Step [Run EDW Month End SSIS Package]    Script Date: 01/18/2022 5:21:57 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run EDW Month End SSIS Package', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
