@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [BAPU (0) - Daily - Control]    Script Date: 03/17/2021 4:04:48 PM ******/
+/****** Object:  Job [BAPU (0) - Daily - Control]    Script Date: 6/20/2022 5:20:18 PM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 03/17/2021 4:04:48 PM ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 6/20/2022 5:20:18 PM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -26,7 +26,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'BAPU (0) - Daily - Control',
 		@owner_login_name=N'WRBTS\SVC-BAP-P-DW', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (1) - Daily - Load Source Data' SQL Job]    Script Date: 03/17/2021 4:04:49 PM ******/
+/****** Object:  Step [Run 'BAPU (1) - Daily - Load Source Data' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (1) - Daily - Load Source Data'' SQL Job', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
@@ -41,7 +41,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (1) - Daily - Load Source Data' SQL Job to Complete]    Script Date: 03/17/2021 4:04:49 PM ******/
+/****** Object:  Step [Wait for 'BAPU (1) - Daily - Load Source Data' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (1) - Daily - Load Source Data'' SQL Job to Complete', 
 		@step_id=2, 
 		@cmdexec_success_code=0, 
@@ -59,7 +59,7 @@ SELECT @JobStatus;
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (2) - Daily - Pre-Core Processing' SQL Job]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [Run 'BAPU (2) - Daily - Pre-Core Processing' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (2) - Daily - Pre-Core Processing'' SQL Job', 
 		@step_id=3, 
 		@cmdexec_success_code=0, 
@@ -74,7 +74,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (2) - Daily - Pre-Core Processing' SQL Job to Complete]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [Wait for 'BAPU (2) - Daily - Pre-Core Processing' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (2) - Daily - Pre-Core Processing'' SQL Job to Complete', 
 		@step_id=4, 
 		@cmdexec_success_code=0, 
@@ -91,7 +91,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (3) - Daily - Core Policy Processing' SQL Job]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [Run 'BAPU (3) - Daily - Core Policy Processing' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (3) - Daily - Core Policy Processing'' SQL Job', 
 		@step_id=5, 
 		@cmdexec_success_code=0, 
@@ -106,7 +106,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (3) - Daily - Core Policy Processing' SQL Job to Complete]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [Wait for 'BAPU (3) - Daily - Core Policy Processing' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (3) - Daily - Core Policy Processing'' SQL Job to Complete', 
 		@step_id=6, 
 		@cmdexec_success_code=0, 
@@ -123,7 +123,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [(Temp) Run 'BAPU (9) - Ad Hoc - Non-Active Source Core Builds' SQL Job]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [(Temp) Run 'BAPU (9) - Ad Hoc - Non-Active Source Core Builds' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'(Temp) Run ''BAPU (9) - Ad Hoc - Non-Active Source Core Builds'' SQL Job', 
 		@step_id=7, 
 		@cmdexec_success_code=0, 
@@ -138,7 +138,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'(Temp) R
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [(Temp) Wait for 'BAPU (9) - Ad Hoc - Non-Active Source Core Builds' SQL Job to Complete]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [(Temp) Wait for 'BAPU (9) - Ad Hoc - Non-Active Source Core Builds' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'(Temp) Wait for ''BAPU (9) - Ad Hoc - Non-Active Source Core Builds'' SQL Job to Complete', 
 		@step_id=8, 
 		@cmdexec_success_code=0, 
@@ -156,7 +156,7 @@ SELECT @JobStatus;
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (4) - Daily - Core Claim Processing' SQL Job]    Script Date: 03/17/2021 4:04:50 PM ******/
+/****** Object:  Step [Run 'BAPU (4) - Daily - Core Claim Processing' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (4) - Daily - Core Claim Processing'' SQL Job', 
 		@step_id=9, 
 		@cmdexec_success_code=0, 
@@ -171,7 +171,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (4) - Daily - Core Claim Processing' SQL Job to Complete]    Script Date: 03/17/2021 4:04:51 PM ******/
+/****** Object:  Step [Wait for 'BAPU (4) - Daily - Core Claim Processing' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (4) - Daily - Core Claim Processing'' SQL Job to Complete', 
 		@step_id=10, 
 		@cmdexec_success_code=0, 
@@ -188,7 +188,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (5) - Daily - Post-Core Processing' SQL Job]    Script Date: 03/17/2021 4:04:51 PM ******/
+/****** Object:  Step [Run 'BAPU (5) - Daily - Post-Core Processing' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (5) - Daily - Post-Core Processing'' SQL Job', 
 		@step_id=11, 
 		@cmdexec_success_code=0, 
@@ -203,7 +203,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (5) - Daily - Post-Core Processing' SQL Job to Complete]    Script Date: 03/17/2021 4:04:51 PM ******/
+/****** Object:  Step [Wait for 'BAPU (5) - Daily - Post-Core Processing' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (5) - Daily - Post-Core Processing'' SQL Job to Complete', 
 		@step_id=12, 
 		@cmdexec_success_code=0, 
@@ -220,7 +220,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (6) - Daily - Cube Processing' SQL Job]    Script Date: 03/17/2021 4:04:51 PM ******/
+/****** Object:  Step [Run 'BAPU (6) - Daily - Cube Processing' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (6) - Daily - Cube Processing'' SQL Job', 
 		@step_id=13, 
 		@cmdexec_success_code=0, 
@@ -236,7 +236,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (6) - Daily - Cube Processing' SQL Job to Complete]    Script Date: 03/17/2021 4:04:51 PM ******/
+/****** Object:  Step [Wait for 'BAPU (6) - Daily - Cube Processing' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (6) - Daily - Cube Processing'' SQL Job to Complete', 
 		@step_id=14, 
 		@cmdexec_success_code=0, 
@@ -253,7 +253,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (7) - Daily - Balancing' SQL Job]    Script Date: 03/17/2021 4:04:51 PM ******/
+/****** Object:  Step [Run 'BAPU (7) - Daily - Balancing' SQL Job]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (7) - Daily - Balancing'' SQL Job', 
 		@step_id=15, 
 		@cmdexec_success_code=0, 
@@ -268,7 +268,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BA
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'BAPU (7) - Daily - Balancing' SQL Job to Complete]    Script Date: 03/17/2021 4:04:52 PM ******/
+/****** Object:  Step [Wait for 'BAPU (7) - Daily - Balancing' SQL Job to Complete]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''BAPU (7) - Daily - Balancing'' SQL Job to Complete', 
 		@step_id=16, 
 		@cmdexec_success_code=0, 
@@ -286,13 +286,13 @@ SELECT @JobStatus;
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Log Disaster Recovery Data Points]    Script Date: 03/17/2021 4:04:52 PM ******/
+/****** Object:  Step [Log Disaster Recovery Data Points]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Log Disaster Recovery Data Points', 
 		@step_id=17, 
 		@cmdexec_success_code=0, 
 		@on_success_action=3, 
-		@on_success_step_id=0, 
-		@on_fail_action=4, 
+		@on_success_step_id=19, 
+		@on_fail_action=3, 
 		@on_fail_step_id=19, 
 		@retry_attempts=0, 
 		@retry_interval=0, 
@@ -303,7 +303,7 @@ EXEC BAPU_Logging.DR.p_Security_Audit ''After regular daily processing'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU - Monthly - FRS Data Pull' SQL Job (On 1st Of Month)]    Script Date: 03/17/2021 4:04:52 PM ******/
+/****** Object:  Step [Run 'BAPU - Monthly - FRS Data Pull' SQL Job (On 1st Of Month)]    Script Date: 6/20/2022 5:20:19 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU - Monthly - FRS Data Pull'' SQL Job (On 1st Of Month)', 
 		@step_id=18, 
 		@cmdexec_success_code=0, 
@@ -325,7 +325,7 @@ IF @DoW = 1
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'BAPU (8) - Daily - Cycle Complete' SQL Job]    Script Date: 03/17/2021 4:04:52 PM ******/
+/****** Object:  Step [Run 'BAPU (8) - Daily - Cycle Complete' SQL Job]    Script Date: 6/20/2022 5:20:20 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''BAPU (8) - Daily - Cycle Complete'' SQL Job', 
 		@step_id=19, 
 		@cmdexec_success_code=0, 
