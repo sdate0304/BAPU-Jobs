@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [BAPU (1) - Daily - Load Source Data]    Script Date: 12/09/2021 5:52:57 PM ******/
+/****** Object:  Job [BAPU (1) - Daily - Load Source Data]    Script Date: 8/17/2022 3:28:39 PM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 12/09/2021 5:52:57 PM ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 8/17/2022 3:28:39 PM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -26,7 +26,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'BAPU (1) - Daily - Load Sour
 		@owner_login_name=N'WRBTS\SVC-BAP-P-DW', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Create Folders for Excel Files]    Script Date: 12/09/2021 5:52:57 PM ******/
+/****** Object:  Step [Create Folders for Excel Files]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Create Folders for Excel Files', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
@@ -39,9 +39,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Create F
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\Daily File Work\Daily File Work.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 6 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Clear Historical Balancing Records]    Script Date: 12/09/2021 5:52:57 PM ******/
+/****** Object:  Step [Clear Historical Balancing Records]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Clear Historical Balancing Records', 
 		@step_id=2, 
 		@cmdexec_success_code=0, 
@@ -56,7 +57,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Clear Hi
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Start Restore BUS Database Batch (Batch_Type_Key = 3) & Start Process_Key_300]    Script Date: 12/09/2021 5:52:57 PM ******/
+/****** Object:  Step [Start Restore BUS Database Batch (Batch_Type_Key = 3) & Start Process_Key_300]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Start Restore BUS Database Batch (Batch_Type_Key = 3) & Start Process_Key_300', 
 		@step_id=3, 
 		@cmdexec_success_code=0, 
@@ -91,7 +92,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd SQL Server Agent Job]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Run 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd SQL Server Agent Job]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd SQL Server Agent Job', 
 		@step_id=4, 
 		@cmdexec_success_code=0, 
@@ -106,7 +107,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run ''Re
 		@database_name=N'master', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Wait for 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd' SQL Job to Complete]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Wait for 'Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd' SQL Job to Complete]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Wait for ''Restore BAPU_PolicyAdministration_WarehouseCopy_From_BapuBUSSqlProd'' SQL Job to Complete', 
 		@step_id=5, 
 		@cmdexec_success_code=0, 
@@ -123,7 +124,7 @@ SELECT @JobStatus;',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Complete Restore BUS Database Batch (Batch_Type_Key = 3) & Complete Process_Key 300]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Complete Restore BUS Database Batch (Batch_Type_Key = 3) & Complete Process_Key 300]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Complete Restore BUS Database Batch (Batch_Type_Key = 3) & Complete Process_Key 300', 
 		@step_id=6, 
 		@cmdexec_success_code=0, 
@@ -174,7 +175,7 @@ IF @batch_status_out = ''Running''
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Fail Process_Key 300 (BUS Staging Restore)]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Fail Process_Key 300 (BUS Staging Restore)]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Fail Process_Key 300 (BUS Staging Restore)', 
 		@step_id=7, 
 		@cmdexec_success_code=0, 
@@ -201,7 +202,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [LDR Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [LDR Load]    Script Date: 8/17/2022 3:28:40 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'LDR Load', 
 		@step_id=8, 
 		@cmdexec_success_code=0, 
@@ -214,9 +215,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'LDR Load
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\LDR\BAPU LDR.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 8 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [APS Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [APS Load]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'APS Load', 
 		@step_id=9, 
 		@cmdexec_success_code=0, 
@@ -229,9 +231,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'APS Load
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\APS\APS Load.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 1 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Gempostage Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Gempostage Load]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Gempostage Load', 
 		@step_id=10, 
 		@cmdexec_success_code=0, 
@@ -244,9 +247,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Gemposta
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\Gempostage\BAPU_Gempostage.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 7 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [OWSY Policy/Item/Partner ETL]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [OWSY Policy/Item/Partner ETL]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Policy/Item/Partner ETL', 
 		@step_id=11, 
 		@cmdexec_success_code=0, 
@@ -259,9 +263,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Pol
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\OWSY\Owsy.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 10 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [OWSY Partner Code Reference ETL]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [OWSY Partner Code Reference ETL]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Partner Code Reference ETL', 
 		@step_id=12, 
 		@cmdexec_success_code=0, 
@@ -274,13 +279,14 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'OWSY Par
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\OWSY\OWSY Partner Codes.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 10 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Loss XLS Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Loss XLS Load]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Loss XLS Load', 
 		@step_id=13, 
 		@cmdexec_success_code=0, 
-		@on_success_action=4, 
+		@on_success_action=3, 
 		@on_success_step_id=15, 
 		@on_fail_action=2, 
 		@on_fail_step_id=0, 
@@ -289,24 +295,26 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Loss XLS
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\Loss XLS\BAPU_Loss_XLS.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 9 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [WC Claim Load (TPA: Sedgwick (Legacy TPA Name: York)]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [WC Claim Load (TPA: Sedgwick (Legacy TPA Name: York)]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'WC Claim Load (TPA: Sedgwick (Legacy TPA Name: York)', 
 		@step_id=14, 
 		@cmdexec_success_code=0, 
-		@on_success_action=1, 
+		@on_success_action=3, 
 		@on_success_step_id=16, 
-		@on_fail_action=2, 
+		@on_fail_action=3, 
 		@on_fail_step_id=0, 
 		@retry_attempts=0, 
 		@retry_interval=0, 
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\York\BAPU_York.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 14 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [SSP PDR Load Check]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [SSP PDR Load Check]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR Load Check', 
 		@step_id=15, 
 		@cmdexec_success_code=0, 
@@ -322,7 +330,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR 
 		@database_name=N'BAPU', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [SSP PDR Policy Load (BAPU)]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [SSP PDR Policy Load (BAPU)]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR Policy Load (BAPU)', 
 		@step_id=16, 
 		@cmdexec_success_code=0, 
@@ -335,9 +343,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR 
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\SSP PDR\BAPU PDR.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 12 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [SSP PDR Quote (BAPU)]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [SSP PDR Quote (BAPU)]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR Quote (BAPU)', 
 		@step_id=17, 
 		@cmdexec_success_code=0, 
@@ -350,9 +359,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'SSP PDR 
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\SSP PDR\BAPU PDR Quote Data.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 12 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Syndicate Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [Syndicate Load]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Syndicate Load', 
 		@step_id=18, 
 		@cmdexec_success_code=0, 
@@ -365,9 +375,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Syndicat
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\Syndicate\Syndicate Data.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 13 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [BDR Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [BDR Load]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BDR Load', 
 		@step_id=19, 
 		@cmdexec_success_code=0, 
@@ -380,9 +391,10 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BDR Load
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\BDR\BDR_BDR.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 4 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [BPM & BPMi Load]    Script Date: 12/09/2021 5:52:58 PM ******/
+/****** Object:  Step [BPM & BPMi Load]    Script Date: 8/17/2022 3:28:41 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BPM & BPMi Load', 
 		@step_id=20, 
 		@cmdexec_success_code=0, 
@@ -395,7 +407,8 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'BPM & BP
 		@os_run_priority=0, @subsystem=N'SSIS', 
 		@command=N'/ISSERVER "\"\SSISDB\BAPU SSIS Processing\BPM\BAPU_BPM.dtsx\"" /SERVER "\"BAP_DW_PROD\"" /ENVREFERENCE 5 /Par "\"$ServerOption::LOGGING_LEVEL(Int16)\"";1 /Par "\"$ServerOption::SYNCHRONIZED(Boolean)\"";True /CALLERINFO SQLAGENT /REPORTING E', 
 		@database_name=N'master', 
-		@flags=0
+		@flags=0, 
+		@proxy_name=N'BAPU_SVC_Proxy'
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
 EXEC @ReturnCode = msdb.dbo.sp_update_job @job_id = @jobId, @start_step_id = 1
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
