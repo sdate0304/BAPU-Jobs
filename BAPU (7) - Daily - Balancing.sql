@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [BAPU (7) - Daily - Balancing]    Script Date: 03/17/2021 4:07:39 PM ******/
+/****** Object:  Job [BAPU (7) - Daily - Balancing]    Script Date: 8/19/2022 1:59:25 PM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 03/17/2021 4:07:40 PM ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 8/19/2022 1:59:26 PM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -26,7 +26,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'BAPU (7) - Daily - Balancing
 		@owner_login_name=N'WRBTS\SVC-BAP-P-DW', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Start BAPU Post-Load Balancing (Batch_Type_Key = 23)]    Script Date: 03/17/2021 4:07:40 PM ******/
+/****** Object:  Step [Start BAPU Post-Load Balancing (Batch_Type_Key = 23)]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Start BAPU Post-Load Balancing (Batch_Type_Key = 23)', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
@@ -49,7 +49,7 @@ EXEC BAPU_Logging.Batch.p_Batch_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_DataQuality for 'Policy Source to Staging' & Start Process_Key 6000]    Script Date: 03/17/2021 4:07:40 PM ******/
+/****** Object:  Step [[     Run p_DataQuality for 'Policy Source to Staging' & Start Process_Key 6000]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_DataQuality for ''Policy Source to Staging'' & Start Process_Key 6000', 
 		@step_id=2, 
 		@cmdexec_success_code=0, 
@@ -76,7 +76,7 @@ EXEC dbo.p_DataQuality ''Policy Source to Staging'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6000]    Script Date: 03/17/2021 4:07:41 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6000]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6000', 
 		@step_id=3, 
 		@cmdexec_success_code=0, 
@@ -102,7 +102,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6000]    Script Date: 03/17/2021 4:07:41 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6000]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6000', 
 		@step_id=4, 
 		@cmdexec_success_code=0, 
@@ -128,7 +128,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Policy Source to Staging' & Start Process_Key 6006]    Script Date: 03/17/2021 4:07:41 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Policy Source to Staging' & Start Process_Key 6006]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''Policy Source to Staging'' & Start Process_Key 6006', 
 		@step_id=5, 
 		@cmdexec_success_code=0, 
@@ -155,7 +155,7 @@ EXEC dbo.p_RunAllBalancingChecks ''Policy Source to Staging'', ''N'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[         Complete Process_Key 6006]    Script Date: 03/17/2021 4:07:41 PM ******/
+/****** Object:  Step [[         Complete Process_Key 6006]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[         Complete Process_Key 6006', 
 		@step_id=6, 
 		@cmdexec_success_code=0, 
@@ -180,7 +180,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[         Fail Process_Key 6006]    Script Date: 03/17/2021 4:07:41 PM ******/
+/****** Object:  Step [[         Fail Process_Key 6006]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[         Fail Process_Key 6006', 
 		@step_id=7, 
 		@cmdexec_success_code=0, 
@@ -205,7 +205,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_DataQuality for 'Claim Source to Staging' & Start Process_Key 6001]    Script Date: 03/17/2021 4:07:41 PM ******/
+/****** Object:  Step [[     Run p_DataQuality for 'Claim Source to Staging' & Start Process_Key 6001]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_DataQuality for ''Claim Source to Staging'' & Start Process_Key 6001', 
 		@step_id=8, 
 		@cmdexec_success_code=0, 
@@ -232,7 +232,7 @@ EXEC dbo.p_DataQuality ''Claim Source to Staging'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6001 (DataQuality Claim Source to Staging)]    Script Date: 03/17/2021 4:07:42 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6001 (DataQuality Claim Source to Staging)]    Script Date: 8/19/2022 1:59:26 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6001 (DataQuality Claim Source to Staging)', 
 		@step_id=9, 
 		@cmdexec_success_code=0, 
@@ -258,7 +258,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6001 (DataQuality for Claim Source to Staging)]    Script Date: 03/17/2021 4:07:42 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6001 (DataQuality for Claim Source to Staging)]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6001 (DataQuality for Claim Source to Staging)', 
 		@step_id=10, 
 		@cmdexec_success_code=0, 
@@ -285,7 +285,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Claim Source to Staging' & Start Process_Key 6007]    Script Date: 03/17/2021 4:07:42 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Claim Source to Staging' & Start Process_Key 6007]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''Claim Source to Staging'' & Start Process_Key 6007', 
 		@step_id=11, 
 		@cmdexec_success_code=0, 
@@ -312,7 +312,7 @@ EXEC dbo.p_RunAllBalancingChecks ''Claim Source to Staging'', ''N'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6007 (RunAllBalancingChecks for Claim Source to Staging)]    Script Date: 03/17/2021 4:07:42 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6007 (RunAllBalancingChecks for Claim Source to Staging)]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6007 (RunAllBalancingChecks for Claim Source to Staging)', 
 		@step_id=12, 
 		@cmdexec_success_code=0, 
@@ -337,7 +337,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6007 (RunAllBalancingChecks for Claim Source to Staging)]    Script Date: 03/17/2021 4:07:42 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6007 (RunAllBalancingChecks for Claim Source to Staging)]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6007 (RunAllBalancingChecks for Claim Source to Staging)', 
 		@step_id=13, 
 		@cmdexec_success_code=0, 
@@ -364,7 +364,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_DataQuality for 'Policy Staging to Core' & Start Process_Key 6002]    Script Date: 03/17/2021 4:07:42 PM ******/
+/****** Object:  Step [[     Run p_DataQuality for 'Policy Staging to Core' & Start Process_Key 6002]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_DataQuality for ''Policy Staging to Core'' & Start Process_Key 6002', 
 		@step_id=14, 
 		@cmdexec_success_code=0, 
@@ -392,7 +392,7 @@ EXEC dbo.p_DataQuality ''Policy Staging to Core'';
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6002]    Script Date: 03/17/2021 4:07:43 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6002]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6002', 
 		@step_id=15, 
 		@cmdexec_success_code=0, 
@@ -418,7 +418,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6002]    Script Date: 03/17/2021 4:07:43 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6002]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6002', 
 		@step_id=16, 
 		@cmdexec_success_code=0, 
@@ -444,7 +444,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Policy Staging to Core' & Start Process_Key 6008]    Script Date: 03/17/2021 4:07:43 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Policy Staging to Core' & Start Process_Key 6008]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''Policy Staging to Core'' & Start Process_Key 6008', 
 		@step_id=17, 
 		@cmdexec_success_code=0, 
@@ -472,7 +472,7 @@ EXEC dbo.p_RunAllBalancingChecks ''Policy Staging to Core'', ''N'';
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6008]    Script Date: 03/17/2021 4:07:43 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6008]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6008', 
 		@step_id=18, 
 		@cmdexec_success_code=0, 
@@ -498,7 +498,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6008]    Script Date: 03/17/2021 4:07:43 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6008]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6008', 
 		@step_id=19, 
 		@cmdexec_success_code=0, 
@@ -524,7 +524,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_DataQuality for 'Claim Staging to Core' & Start Process_Key 6003]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[     Run p_DataQuality for 'Claim Staging to Core' & Start Process_Key 6003]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_DataQuality for ''Claim Staging to Core'' & Start Process_Key 6003', 
 		@step_id=20, 
 		@cmdexec_success_code=0, 
@@ -552,7 +552,7 @@ EXEC dbo.p_DataQuality ''Claim Staging to Core'';
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6003]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6003]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6003', 
 		@step_id=21, 
 		@cmdexec_success_code=0, 
@@ -578,7 +578,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6003]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6003]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6003', 
 		@step_id=22, 
 		@cmdexec_success_code=0, 
@@ -604,7 +604,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Claim Staging to Core' & Start Process_Key 6009]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Claim Staging to Core' & Start Process_Key 6009]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''Claim Staging to Core'' & Start Process_Key 6009', 
 		@step_id=23, 
 		@cmdexec_success_code=0, 
@@ -632,7 +632,7 @@ EXEC dbo.p_RunAllBalancingChecks ''Claim Staging to Core'', ''N'';
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6009]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6009]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6009', 
 		@step_id=24, 
 		@cmdexec_success_code=0, 
@@ -658,7 +658,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6009]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6009]    Script Date: 8/19/2022 1:59:27 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6009', 
 		@step_id=25, 
 		@cmdexec_success_code=0, 
@@ -684,7 +684,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'CORE Data Check' & Start Process_Key 6010]    Script Date: 03/17/2021 4:07:44 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'CORE Data Check' & Start Process_Key 6010]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''CORE Data Check'' & Start Process_Key 6010', 
 		@step_id=26, 
 		@cmdexec_success_code=0, 
@@ -712,7 +712,7 @@ EXEC dbo.p_RunAllBalancingChecks ''CORE Data Check'', ''N'';
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6010]    Script Date: 03/17/2021 4:07:45 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6010]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6010', 
 		@step_id=27, 
 		@cmdexec_success_code=0, 
@@ -738,7 +738,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6010]    Script Date: 03/17/2021 4:07:45 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6010]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6010', 
 		@step_id=28, 
 		@cmdexec_success_code=0, 
@@ -764,7 +764,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Workflow Source to Staging' & Start Process_Key 6004]    Script Date: 03/17/2021 4:07:45 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Workflow Source to Staging' & Start Process_Key 6004]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''Workflow Source to Staging'' & Start Process_Key 6004', 
 		@step_id=29, 
 		@cmdexec_success_code=0, 
@@ -792,7 +792,7 @@ EXEC dbo.p_RunAllBalancingChecks ''Workflow Source to Staging'', ''N'';
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6004]    Script Date: 03/17/2021 4:07:45 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6004]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6004', 
 		@step_id=30, 
 		@cmdexec_success_code=0, 
@@ -818,7 +818,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6004]    Script Date: 03/17/2021 4:07:45 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6004]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6004', 
 		@step_id=31, 
 		@cmdexec_success_code=0, 
@@ -844,7 +844,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Billing Source to Staging' & Start Process_Key 6005]    Script Date: 03/17/2021 4:07:45 PM ******/
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'Billing Source to Staging' & Start Process_Key 6005]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''Billing Source to Staging'' & Start Process_Key 6005', 
 		@step_id=32, 
 		@cmdexec_success_code=0, 
@@ -871,7 +871,7 @@ EXEC dbo.p_RunAllBalancingChecks ''Billing Source to Staging'', ''N'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6005]    Script Date: 03/17/2021 4:07:46 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6005]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6005', 
 		@step_id=33, 
 		@cmdexec_success_code=0, 
@@ -896,7 +896,7 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail Process_Key 6005]    Script Date: 03/17/2021 4:07:46 PM ******/
+/****** Object:  Step [[          Fail Process_Key 6005]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail Process_Key 6005', 
 		@step_id=34, 
 		@cmdexec_success_code=0, 
@@ -921,29 +921,14 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Clear Historical Balancing Records]    Script Date: 03/17/2021 4:07:46 PM ******/
-EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Clear Historical Balancing Records', 
+/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'DWH System Check' & Start Process_Key 6012]    Script Date: 8/19/2022 1:59:28 PM ******/
+EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''DWH System Check'' & Start Process_Key 6012', 
 		@step_id=35, 
 		@cmdexec_success_code=0, 
 		@on_success_action=3, 
 		@on_success_step_id=0, 
-		@on_fail_action=3, 
-		@on_fail_step_id=0, 
-		@retry_attempts=0, 
-		@retry_interval=0, 
-		@os_run_priority=0, @subsystem=N'TSQL', 
-		@command=N'EXEC dbo.p_BalancingDataCleanUp ''60'';', 
-		@database_name=N'BAPU_Logging', 
-		@flags=0
-IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[     Run p_RunAllBalancingChecks for 'DWH System Check' & Start Process_Key 6012]    Script Date: 03/17/2021 4:07:46 PM ******/
-EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[     Run p_RunAllBalancingChecks for ''DWH System Check'' & Start Process_Key 6012', 
-		@step_id=36, 
-		@cmdexec_success_code=0, 
-		@on_success_action=3, 
-		@on_success_step_id=0, 
 		@on_fail_action=4, 
-		@on_fail_step_id=38, 
+		@on_fail_step_id=37, 
 		@retry_attempts=0, 
 		@retry_interval=0, 
 		@os_run_priority=0, @subsystem=N'TSQL', 
@@ -963,14 +948,14 @@ EXEC dbo.p_RunAllBalancingChecks ''DWH System Check'', ''N'';',
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Complete Process_Key 6012]    Script Date: 03/17/2021 4:07:46 PM ******/
+/****** Object:  Step [[          Complete Process_Key 6012]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Complete Process_Key 6012', 
-		@step_id=37, 
+		@step_id=36, 
 		@cmdexec_success_code=0, 
 		@on_success_action=4, 
-		@on_success_step_id=39, 
+		@on_success_step_id=38, 
 		@on_fail_action=4, 
-		@on_fail_step_id=39, 
+		@on_fail_step_id=38, 
 		@retry_attempts=0, 
 		@retry_interval=0, 
 		@os_run_priority=0, @subsystem=N'TSQL', 
@@ -988,9 +973,9 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [[          Fail but Continue Process_Key 6012]    Script Date: 03/17/2021 4:07:46 PM ******/
+/****** Object:  Step [[          Fail but Continue Process_Key 6012]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'[          Fail but Continue Process_Key 6012', 
-		@step_id=38, 
+		@step_id=37, 
 		@cmdexec_success_code=0, 
 		@on_success_action=3, 
 		@on_success_step_id=0, 
@@ -1013,9 +998,9 @@ EXEC Batch.p_Process_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Complete BAPU Post-Load Balancing (Batch_Type_Key = 23)]    Script Date: 03/17/2021 4:07:47 PM ******/
+/****** Object:  Step [Complete BAPU Post-Load Balancing (Batch_Type_Key = 23)]    Script Date: 8/19/2022 1:59:28 PM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Complete BAPU Post-Load Balancing (Batch_Type_Key = 23)', 
-		@step_id=39, 
+		@step_id=38, 
 		@cmdexec_success_code=0, 
 		@on_success_action=1, 
 		@on_success_step_id=0, 
