@@ -1,11 +1,11 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [BAPU (2) - Daily - Pre-Core Processing]    Script Date: 11/11/2021 4:44:31 PM ******/
+/****** Object:  Job [BAPU (2) - Daily - Pre-Core Processing]    Script Date: 12/9/2022 8:46:17 AM ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 11/11/2021 4:44:32 PM ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 12/9/2022 8:46:18 AM ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -26,7 +26,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'BAPU (2) - Daily - Pre-Core 
 		@owner_login_name=N'WRBTS\SVC-BAP-P-DW', 
 		@notify_email_operator_name=N'BAPU DW Notifications', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Start Pre-Core Data Work Batch (Batch_Type_Key = 18)]    Script Date: 11/11/2021 4:44:32 PM ******/
+/****** Object:  Step [Start Pre-Core Data Work Batch (Batch_Type_Key = 18)]    Script Date: 12/9/2022 8:46:18 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Start Pre-Core Data Work Batch (Batch_Type_Key = 18)', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 
@@ -49,7 +49,7 @@ EXEC BAPU_Logging.Batch.p_Batch_Log
 		@database_name=N'BAPU_Logging', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [p_PDR_SSP_Insert_LastRiskUnitVersion]    Script Date: 11/11/2021 4:44:32 PM ******/
+/****** Object:  Step [p_PDR_SSP_Insert_LastRiskUnitVersion]    Script Date: 12/9/2022 8:46:18 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'p_PDR_SSP_Insert_LastRiskUnitVersion', 
 		@step_id=2, 
 		@cmdexec_success_code=0, 
@@ -64,7 +64,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'p_PDR_SS
 		@database_name=N'BAPU', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [p_PDR_SSP_Insert_LastCoverageUnitVersion]    Script Date: 11/11/2021 4:44:32 PM ******/
+/****** Object:  Step [p_PDR_SSP_Insert_LastCoverageUnitVersion]    Script Date: 12/9/2022 8:46:19 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'p_PDR_SSP_Insert_LastCoverageUnitVersion', 
 		@step_id=3, 
 		@cmdexec_success_code=0, 
@@ -79,7 +79,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'p_PDR_SS
 		@database_name=N'BAPU', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [p_BUS_Custom_Property_Risk_Detail_Load]    Script Date: 11/11/2021 4:44:32 PM ******/
+/****** Object:  Step [p_BUS_Custom_Property_Risk_Detail_Load]    Script Date: 12/9/2022 8:46:19 AM ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'p_BUS_Custom_Property_Risk_Detail_Load', 
 		@step_id=4, 
 		@cmdexec_success_code=0, 
@@ -94,9 +94,24 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'p_BUS_Cu
 		@database_name=N'BAPU_CORE', 
 		@flags=0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Complete Pre-Core Data Work Batch (Batch_Type_Key = 18)]    Script Date: 11/11/2021 4:44:32 PM ******/
-EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Complete Pre-Core Data Work Batch (Batch_Type_Key = 18)', 
+/****** Object:  Step [HTB.p_Populate_Caclculated_Limits_Table]    Script Date: 12/9/2022 8:46:19 AM ******/
+EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'HTB.p_Populate_Caclculated_Limits_Table', 
 		@step_id=5, 
+		@cmdexec_success_code=0, 
+		@on_success_action=3, 
+		@on_success_step_id=0, 
+		@on_fail_action=2, 
+		@on_fail_step_id=0, 
+		@retry_attempts=0, 
+		@retry_interval=0, 
+		@os_run_priority=0, @subsystem=N'TSQL', 
+		@command=N'EXEC BAPU.HTB.p_Populate_Caclculated_Limits_Table;', 
+		@database_name=N'BAPU', 
+		@flags=0
+IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
+/****** Object:  Step [Complete Pre-Core Data Work Batch (Batch_Type_Key = 18)]    Script Date: 12/9/2022 8:46:19 AM ******/
+EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Complete Pre-Core Data Work Batch (Batch_Type_Key = 18)', 
+		@step_id=6, 
 		@cmdexec_success_code=0, 
 		@on_success_action=1, 
 		@on_success_step_id=0, 
